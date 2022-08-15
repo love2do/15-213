@@ -1,0 +1,34 @@
+==================================================
+Testing Task 1 (iscord)
+Test './grade-iscord simplecords'... ok
+Test './grade-iscord edge'... ok
+Test './grade-iscord example'... ok
+Test './grade-iscord circular'... ok
+==================================================
+Testing Task 2 (basic)
+Test './grade-basic new'... ok
+Test './grade-basic length'... ok
+Test './grade-basic join'... ok
+Test './grade-basic huge'... ok
+==================================================
+Testing Task 3 (rec)
+Test './grade-rec charat'... ok
+Test './grade-rec charat-huge'... ok
+Test './grade-rec tostring'... ok
+==================================================
+Testing Task 4 (sub)
+Test './grade-sub simple'... ok
+Test './grade-sub edge'... ok
+Test './grade-sub noalloc'... ok
+Test './grade-sub noshare'... ok
+Test './grade-sub someshare'... ok
+==================================================
+Testing Task 5 (student)
+Test './test-cord'... ok
+==================================================
+Task 1: 4.0/4.0
+Task 2: 7.0/7.0
+Task 3: 4.0/4.0
+Task 4: 7.0/7.0
+Task 5: 1.0/1.0
+TOTAL:  23.0/23.0
