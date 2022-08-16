@@ -241,7 +241,25 @@ int logicalNeg(int x) { return (((x) | (~x + 1)) >> 31) + 1; }
  *  Max ops: 90
  *  Rating: 4
  */
-int howManyBits(int x) { return 0; }
+int howManyBits(int x) {
+  int sign = !!(x >> 31);
+  int allsign = ~(~sign + 1);
+  x = allsign & x | (~allsign) & (~x);
+
+  int b16, b8, b4, b2, b1, b0;
+  b16 = !!(x >> 16) << 4;
+  x >>= b16;
+  b8 = !!(x >> 8) << 3;
+  x >>= b8;
+  b4 = !!(x >> 4) << 2;
+  x >>= b4;
+  b2 = !!(x >> 2) << 1;
+  x >>= b2;
+  b1 = !!(x >> 1);
+  x <<= b1;
+  b0 = !!x;
+  return b16 + b8 + b4 + b2 + b1 + b0 + 1;
+}
 // float
 /*
  * floatScale2 - Return bit-level equivalent of expression 2*f for
@@ -254,7 +272,19 @@ int howManyBits(int x) { return 0; }
  *   Max ops: 30
  *   Rating: 4
  */
-unsigned floatScale2(unsigned uf) { return 2; }
+unsigned floatScale2(unsigned uf) {
+  int sign = (uf >> 31) & 1;
+  int exp = (uf & 0x7f800000) >> 23;
+  if (exp == 0) {
+    return (uf << 1) | (sign << 31);
+  }
+  if (exp == 255)
+    return uf;
+  ++exp;
+  if (exp == 255)
+    return 0x7f800000 | (sign << 31);
+  return (exp << 23) | (uf & 0x807FFFFF);
+}
 /*
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
  *   for floating point argument f.
@@ -267,7 +297,25 @@ unsigned floatScale2(unsigned uf) { return 2; }
  *   Max ops: 30
  *   Rating: 4
  */
-int floatFloat2Int(unsigned uf) { return 2; }
+int floatFloat2Int(unsigned uf) {
+  int sign = (uf >> 31) & 1;
+  int E = ((uf & 0x7f800000) >> 23) - 127;
+  int frac = uf & 0x7fffff;
+  int num;
+
+  if (E < 0)
+    return 0;
+  if (E >= 31)
+    return 0x80000000;
+
+  if (E > 23) {
+    num = frac << (E - 23);
+  } else {
+    num = frac >> (23 - E);
+  }
+  num |= 1 << E;
+  return sign == 0 ? num : -num;
+}
 /*
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
  *   (2.0 raised to the power x) for any 32-bit integer x.
@@ -281,4 +329,10 @@ int floatFloat2Int(unsigned uf) { return 2; }
  *   Max ops: 30
  *   Rating: 4
  */
-unsigned floatPower2(int x) { return 2; }
+unsigned floatPower2(int x) {
+  if (x < -127)
+    return 0;
+  else if (x >= 128)
+    return 0xFF << 23;
+  return (x + 127) << 23;
+}
